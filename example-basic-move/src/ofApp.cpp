@@ -25,7 +25,7 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-
+    
     ofSetFrameRate(60);
     ofSetVerticalSync(true);
     ofBackground(0);
@@ -34,10 +34,11 @@ void ofApp::setup(){
     setupViewports();
     
     parameters.setup();
-    robot.setup("192.168.1.9", parameters); // <-- change to your robot's ip address
+    robot.setup("192.168.0.10", parameters); // <-- change to your robot's ip address
     
     setupGUI();
     positionGUI();
+    
     
 }
 
@@ -73,6 +74,8 @@ void ofApp::draw(){
     
     drawGUI();
     
+    //    gui.draw();
+    
 }
 
 void ofApp::moveArm(){
@@ -97,9 +100,27 @@ void ofApp::moveArm(){
         parameters.targetTCPOrientation = ofVec4f(parameters.targetTCP.rotation.x(), parameters.targetTCP.rotation.y(), parameters.targetTCP.rotation.z(), parameters.targetTCP.rotation.w());
         
     }
-    else{
+    else if (!followHand) {
         // update the tool tcp
         tcpNode.setTransformMatrix(gizmo.getMatrix());
+    }
+    
+    if(followHand){
+        // HIDEMARO
+        // update the tool tcp
+        tcpNode.setPosition(600, 600, 600);
+        
+        ofMatrix4x4 m;
+        m.set(1, 1, 1, 1, 1, 1, 1, 1, 1, 11, 1, 1, 1, 1, 1, 1);
+        ofQuaternion handOrient = m.getRotate();
+        handOrient *= handOrient.conj();
+        handOrient.makeRotate(90, 0, 1, 0);
+        handOrient *= m.getRotate();
+        
+        tcpNode.setOrientation(handOrient);
+        
+        // update the gizmo
+        gizmo.setNode(tcpNode);
     }
     
     // follow the gizmo's position and orientation
@@ -260,7 +281,7 @@ void ofApp::hightlightViewports(){
         ofSetLineWidth(6);
         ofSetColor(ofColor::white,30);
         ofDrawRectangle(viewportReal);
-  
+        
     }
     // hightlight left viewport
     else{
@@ -282,7 +303,7 @@ void ofApp::hightlightViewports(){
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
-
+    
     if(key == 'm'){
         parameters.bMove = !parameters.bMove;
     }
@@ -299,18 +320,22 @@ void ofApp::keyPressed(int key){
     if( key == 'e' ) {
         gizmo.toggleVisible();
     }
-
+    
+    if (key == 'F'){
+        followHand = !followHand;
+    }
+    
     handleViewportPresets(key);
 }
 
 //--------------------------------------------------------------
 void ofApp::keyReleased(int key){
-
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseMoved(int x, int y ){
-
+    
 }
 
 //--------------------------------------------------------------
@@ -320,35 +345,35 @@ void ofApp::mouseDragged(int x, int y, int button){
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
-
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button){
-
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseEntered(int x, int y){
-
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseExited(int x, int y){
-
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::windowResized(int w, int h){
-
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::gotMessage(ofMessage msg){
-
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::dragEvent(ofDragInfo dragInfo){ 
-
+    
 }
