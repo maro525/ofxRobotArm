@@ -39,6 +39,8 @@ void ofApp::setup(){
     setupGUI();
     positionGUI();
     
+    udpConnection.Create();
+    udpConnection.Connect("127.0.0.1", 11999);
     
 }
 
@@ -56,20 +58,22 @@ void ofApp::draw(){
     ofSetColor(255,160);
     ofDrawBitmapString("OF FPS "+ofToString(ofGetFrameRate()), 30, ofGetWindowHeight()-50);
     ofDrawBitmapString("Robot FPS "+ofToString(robot.robot.getThreadFPS()), 30, ofGetWindowHeight()-65);
+    ofDrawBitmapString("mouseX "+ofToString(ofGetMouseX()), 30, ofGetWindowHeight()-95);
+    ofDrawBitmapString("mouseY "+ofToString(ofGetMouseY()), 30, ofGetWindowHeight()-80);
     
     gizmo.setViewDimensions(viewportSim.width, viewportSim.height);
     
     // show realtime robot
     cams[0]->begin(viewportReal);
-    tcpNode.draw();
-    robot.robot.model.draw();
+    //    tcpNode.draw();
+    //    robot.robot.model.draw();
     cams[0]->end();
     
     // show simulation robot
     cams[1]->begin(viewportSim);
     ofDrawAxis(100);
-    gizmo.draw(*cams[1]);
-    robot.movement.draw(0);
+    //    gizmo.draw(*cams[1]);
+    //    robot.movement.draw(0);
     cams[1]->end();
     
     drawGUI();
@@ -100,27 +104,9 @@ void ofApp::moveArm(){
         parameters.targetTCPOrientation = ofVec4f(parameters.targetTCP.rotation.x(), parameters.targetTCP.rotation.y(), parameters.targetTCP.rotation.z(), parameters.targetTCP.rotation.w());
         
     }
-    else if (!followHand) {
+    else{
         // update the tool tcp
         tcpNode.setTransformMatrix(gizmo.getMatrix());
-    }
-    
-    if(followHand){
-        // HIDEMARO
-        // update the tool tcp
-        tcpNode.setPosition(600, 600, 600);
-        
-        ofMatrix4x4 m;
-        m.set(1, 1, 1, 1, 1, 1, 1, 1, 1, 11, 1, 1, 1, 1, 1, 1);
-        ofQuaternion handOrient = m.getRotate();
-        handOrient *= handOrient.conj();
-        handOrient.makeRotate(90, 0, 1, 0);
-        handOrient *= m.getRotate();
-        
-        tcpNode.setOrientation(handOrient);
-        
-        // update the gizmo
-        gizmo.setNode(tcpNode);
     }
     
     // follow the gizmo's position and orientation
@@ -320,11 +306,6 @@ void ofApp::keyPressed(int key){
     if( key == 'e' ) {
         gizmo.toggleVisible();
     }
-    
-    if (key == 'F'){
-        followHand = !followHand;
-    }
-    
     handleViewportPresets(key);
 }
 
@@ -345,7 +326,11 @@ void ofApp::mouseDragged(int x, int y, int button){
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
-    
+    float mx = 0.0;
+    float my = ofMap(x, 0, ofGetWindowWidth(), -0.1, 0.1);
+    float mz = ofMap(y, 0, ofGetWindowHeight(), -0.1, 0.1);
+    string message = ofToString(mx) + "|" + ofToString(my) + "|" + ofToString(mz);
+    int sent = udpConnection.Send(message.c_str(),message.length());
 }
 
 //--------------------------------------------------------------
