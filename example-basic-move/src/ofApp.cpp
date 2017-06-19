@@ -39,8 +39,8 @@ void ofApp::setup(){
     setupGUI();
     positionGUI();
     
-    udpConnection.Create();
-    udpConnection.Connect("127.0.0.1", 11999);
+    udpConnections.Create();
+    udpConnections.Connect("127.0.0.1", 11999);
     
 }
 
