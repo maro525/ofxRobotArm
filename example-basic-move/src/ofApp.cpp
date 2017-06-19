@@ -39,8 +39,9 @@ void ofApp::setup(){
     setupGUI();
     positionGUI();
     
+    //create the socket and set to send to 127.0.0.1:11999
     udpConnection.Create();
-    udpConnection.Connect("127.0.0.1", 11999);
+    udpConnection.Connect("127.0.0.1",11999);
     
 }
 
@@ -65,15 +66,15 @@ void ofApp::draw(){
     
     // show realtime robot
     cams[0]->begin(viewportReal);
-    //    tcpNode.draw();
-    //    robot.robot.model.draw();
+        tcpNode.draw();
+        robot.robot.model.draw();
     cams[0]->end();
     
     // show simulation robot
     cams[1]->begin(viewportSim);
     ofDrawAxis(100);
-    //    gizmo.draw(*cams[1]);
-    //    robot.movement.draw(0);
+        gizmo.draw(*cams[1]);
+        robot.movement.draw(0);
     cams[1]->end();
     
     drawGUI();
@@ -307,6 +308,10 @@ void ofApp::keyPressed(int key){
         gizmo.toggleVisible();
     }
     handleViewportPresets(key);
+    
+    if (key == 'u' ) {
+        
+    }
 }
 
 //--------------------------------------------------------------
