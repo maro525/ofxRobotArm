@@ -31,10 +31,10 @@ void ofApp::setup(){
     ofBackground(0);
     ofSetLogLevel(OF_LOG_SILENT);
     
-    setupViewports();
+    setupViewports(); // 画面のセットアップ
     
     parameters.setup();
-    robot.setup("192.168.1.9", parameters); // <-- change to your robot's ip address
+    robot.setup("192.168.0.10", parameters); // <-- change to your robot's ip address
     
     setupGUI();
     positionGUI();
